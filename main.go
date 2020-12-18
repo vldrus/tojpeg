@@ -33,32 +33,15 @@ func main() {
 		exit(1, "%s: Unsupported format\n", fn)
 	}
 
-	in, err := os.Open(fn)
+	img, err := loadOrig(fn)
 	if err != nil {
-		exit(1, "%s: Cannot open file: %v\n", fn, err)
-	}
-	img, _, err := image.Decode(in)
-	if err != nil {
-		exit(1, "%s: Cannot read file: %v\n", fn, err)
-	}
-	if err := in.Close(); err != nil {
-		exit(1, "%s: Cannot close file: %v\n", fn, err)
+		exit(1, "%s: Cannot load file: %v\n", fn, err)
 	}
 
 	on := strings.TrimSuffix(fn, filepath.Ext(fn)) + ".jpg"
 
-	out, err := os.Create(on)
-	if err != nil {
-		exit(1, "%s: Cannot create file %s: %v\n", fn, on, err)
-	}
-	opts := jpeg.Options{
-		Quality: quality,
-	}
-	if err := jpeg.Encode(out, img, &opts); err != nil {
-		exit(1, "%s: Cannot write file %s: %v\n", fn, on, err)
-	}
-	if err := out.Close(); err != nil {
-		exit(1, "%s: Cannot close file %s: %v\n", fn, on, err)
+	if err := saveJPEG(on, img); err != nil {
+		exit(1, "%s: Cannot save file %s: %v\n", fn, on, err)
 	}
 
 	exit(0, "%s: File converted. Created %s", fn, on)
@@ -67,4 +50,32 @@ func main() {
 func exit(status int, format string, a ...interface{}) {
 	fmt.Printf(format, a...)
 	os.Exit(status)
+}
+
+func loadOrig(name string) (image.Image, error) {
+	in, err := os.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	defer in.Close()
+
+	img, _, err := image.Decode(in)
+	if err != nil {
+		return nil, err
+	}
+
+	return img, nil
+}
+
+func saveJPEG(name string, img image.Image) error {
+	out, err := os.Create(name)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	opts := jpeg.Options{
+		Quality: quality,
+	}
+	return jpeg.Encode(out, img, &opts)
 }

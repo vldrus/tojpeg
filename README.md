@@ -1,4 +1,4 @@
-A simple image to jpeg converter.
+Simple image to jpeg converter.
 
 Supported formats:
 ```
