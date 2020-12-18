@@ -1,0 +1,7 @@
+.idea/
+.vscode/
+
+/img/*.jpg
+
+tojpeg
+tojpeg.exe
