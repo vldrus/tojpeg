@@ -26,25 +26,19 @@ func main() {
 		exit(1, usage, os.Args[0], formats)
 	}
 
-	fn := os.Args[1]
-	ff := strings.TrimPrefix(filepath.Ext(fn), ".")
+	fileName := os.Args[1]
+	jpegName := strings.TrimSuffix(fileName, filepath.Ext(fileName)) + ".jpg"
 
-	if !strings.Contains(formats, ff) {
-		exit(1, "%s: Unsupported format\n", fn)
-	}
-
-	img, err := loadOrig(fn)
+	img, err := loadOrig(fileName)
 	if err != nil {
-		exit(1, "%s: Cannot load file: %v\n", fn, err)
+		exit(1, "%s: Cannot load file: %v\n", fileName, err)
 	}
 
-	on := strings.TrimSuffix(fn, filepath.Ext(fn)) + ".jpg"
-
-	if err := saveJPEG(on, img); err != nil {
-		exit(1, "%s: Cannot save file %s: %v\n", fn, on, err)
+	if err := saveJPEG(jpegName, img); err != nil {
+		exit(1, "%s: Cannot save file %s: %v\n", fileName, jpegName, err)
 	}
 
-	exit(0, "%s: File converted. Created %s", fn, on)
+	exit(0, "%s: File converted. Created %s", fileName, jpegName)
 }
 
 func exit(status int, format string, a ...interface{}) {
