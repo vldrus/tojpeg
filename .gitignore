@@ -1,7 +1,7 @@
-.idea
-.vscode
+/.idea
+/.vscode
 
-img/test.jpg
+/img/*.jpg
 
-tojpeg
-tojpeg.exe
+/tojpeg
+/tojpeg.exe

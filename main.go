@@ -14,40 +14,43 @@ import (
 	"strings"
 )
 
-const formats = "bmp,gif,jpg,jpeg,jfif,png,tif,tiff,webp"
-const quality = 75
+const Quality = 75
 
-const usage = "Usage: %s path/to/file.png\n" +
-	"Converted jpeg will be saved to path/to/file.jpg\n" +
+const Usage = "Usage: %s path/to/file1.png path/to/file2.png...\n" +
+	"Converted JPEGs will be saved to path/to/file1.jpg path/to/file2.jpg...\n" +
 	"Supported formats: %s\n"
+
+const Formats = "bmp,gif,jpg,jpeg,jfif,png,tif,tiff,webp"
 
 func main() {
 	if len(os.Args) < 2 {
-		exit(1, usage, os.Args[0], formats)
+		fmt.Fprintf(os.Stderr, Usage, os.Args[0], Formats)
+		os.Exit(1)
 	}
 
-	fileName := os.Args[1]
-	jpegName := strings.TrimSuffix(fileName, filepath.Ext(fileName)) + ".jpg"
+	for _, arg := range os.Args[1:] {
+		err := convert(arg)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s: Error: %v\n", arg, err)
+			continue
+		}
+		fmt.Printf("%s: Done\n", arg)
+	}
+}
 
-	img, err := loadOrig(fileName)
+func convert(path string) error {
+	img, err := loadOrig(path)
 	if err != nil {
-		exit(1, "%s: Cannot load file: %v\n", fileName, err)
+		return err
 	}
 
-	if err := saveJPEG(jpegName, img); err != nil {
-		exit(1, "%s: Cannot save file %s: %v\n", fileName, jpegName, err)
-	}
+	conv := strings.TrimSuffix(path, filepath.Ext(path)) + ".jpg"
 
-	exit(0, "%s: File converted. Created %s", fileName, jpegName)
+	return saveJPEG(conv, img)
 }
 
-func exit(status int, format string, a ...interface{}) {
-	fmt.Printf(format, a...)
-	os.Exit(status)
-}
-
-func loadOrig(name string) (image.Image, error) {
-	in, err := os.Open(name)
+func loadOrig(path string) (image.Image, error) {
+	in, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
@@ -61,15 +64,15 @@ func loadOrig(name string) (image.Image, error) {
 	return img, nil
 }
 
-func saveJPEG(name string, img image.Image) error {
-	out, err := os.Create(name)
+func saveJPEG(path string, img image.Image) error {
+	out, err := os.Create(path)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
 	opts := jpeg.Options{
-		Quality: quality,
+		Quality: Quality,
 	}
 	return jpeg.Encode(out, img, &opts)
 }
