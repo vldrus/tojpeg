@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-const Quality = 75
+const Quality = 85
 
 const Usage = "Usage: %s path/to/file1.png path/to/file2.png...\n" +
 	"Converted JPEGs will be saved to path/to/file1.jpg path/to/file2.jpg...\n" +
