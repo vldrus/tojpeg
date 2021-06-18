@@ -16,8 +16,8 @@ import (
 
 const Quality = 85
 
-const Usage = "Usage: %s path/to/file1.png path/to/file2.png...\n" +
-	"Converted JPEGs will be saved to path/to/file1.jpg path/to/file2.jpg...\n" +
+const Usage = "Usage: %s file1.png file2.png...\n" +
+	"Converted JPEGs will be saved to file1.jpg file2.jpg...\n" +
 	"Supported formats: %s\n"
 
 const Formats = "bmp,gif,jpg,jpeg,jfif,png,tif,tiff,webp"
